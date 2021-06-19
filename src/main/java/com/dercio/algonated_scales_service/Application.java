@@ -38,10 +38,11 @@ public class Application extends AbstractVerticle {
                         .end());
 
 
+        var port = Integer.parseInt(System.getProperty("heroku.port", "1234"));
         httpServer = vertx.createHttpServer();
         httpServer
                 .requestHandler(router)
-                .listen(1234, "0.0.0.0", result -> {
+                .listen(port, "0.0.0.0", result -> {
                     log.info("HTTP Server Started ...");
                     startPromise.complete();
                 });

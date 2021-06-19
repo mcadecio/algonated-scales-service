@@ -1,0 +1,1 @@
+web: java -Dheroku.port=$PORT -jar target/algonated-scales-service-1.0.jar
