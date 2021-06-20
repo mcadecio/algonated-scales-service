@@ -56,16 +56,12 @@ public class ScalesAnalyticsVerticle extends AbstractVerticle {
     }
 
     private CodeRunnerSummary createSummary(AnalyticsRequest request) {
-        return new CodeRunnerSummary()
-                .setIterations(request.getIterations())
-                .setTimeRun(request.getTimeElapsed())
-                .setEfficacy(efficiencyCalculator.calculate(
-                        request.getWeights(),
-                        request.getSolution())
-                ).setFitness(fitnessCalculator.calculate(
-                        request.getWeights(),
-                        request.getSolution())
-                );
+        var summary = new CodeRunnerSummary();
+        summary.setIterations(request.getIterations());
+        summary.setTimeRun(request.getTimeElapsed());
+        summary.setEfficacy(efficiencyCalculator.calculate(request.getWeights(), request.getSolution()));
+        summary.setFitness(fitnessCalculator.calculate(request.getWeights(), request.getSolution()));
+        return summary;
     }
 
     @Override

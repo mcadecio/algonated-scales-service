@@ -20,7 +20,7 @@ public class IllegalMethodVerifier implements Verifier {
             return Collections.emptyList();
         }
 
-        final String regex = String.format("(%s)", String.join("|", illegalMethods));
+        final var regex = String.format("(%s)", String.join("|", illegalMethods));
 
         return Pattern.compile(regex)
                 .matcher(code)

@@ -2,10 +2,12 @@ package com.dercio.algonated_scales_service.response;
 
 import com.dercio.algonated_scales_service.runner.CodeRunnerSummary;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.ToString;
 
 import java.util.Collections;
 import java.util.List;
 
+@ToString
 public class Response {
 
     private boolean isSuccess;

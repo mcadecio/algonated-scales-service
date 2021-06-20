@@ -1,8 +1,6 @@
 package com.dercio.algonated_scales_service.runner;
 
 import com.dercio.algonated_scales_service.response.Response;
-import com.dercio.algonated_scales_service.runner.calculator.ScalesEfficiencyCalculator;
-import com.dercio.algonated_scales_service.runner.calculator.ScalesFitnessCalculator;
 import com.dercio.algonated_scales_service.runner.executor.SelfClosingExecutor;
 import com.dercio.algonated_scales_service.verifier.IllegalMethodVerifier;
 import com.dercio.algonated_scales_service.verifier.Verifier;
@@ -16,7 +14,6 @@ import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -79,7 +76,6 @@ public class ScalesCodeRunner {
             solution = transformStringToList(rawSolution);
             isSuccess = true;
             errorMessage = "Compile and Run was a success!";
-            buildSummary(timer.elapsed(TimeUnit.MILLISECONDS));
         } catch (ReflectException | ExecutionException exception) {
             handleError(exception.getMessage());
         } catch (InterruptedException interruptedException) {
@@ -89,12 +85,6 @@ public class ScalesCodeRunner {
         return this;
     }
 
-    public void buildSummary(long elapsed) {
-        runnerSummary.setTimeRun(elapsed)
-                .setIterations(options.getIterations())
-                .setFitness(new ScalesFitnessCalculator().calculate(weights, solution))
-                .setEfficacy(new ScalesEfficiencyCalculator().calculate(weights, solution));
-    }
 
     public String getErrorMessage() {
         return errorMessage;
