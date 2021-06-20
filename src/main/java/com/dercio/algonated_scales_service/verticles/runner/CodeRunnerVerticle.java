@@ -63,7 +63,6 @@ public class CodeRunnerVerticle extends AbstractVerticle {
         });
     }
 
-
     private void handleMessage(Message<CodeOptions> message) {
         log.info("Consuming message");
         CodeOptions options = message.body();
