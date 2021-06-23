@@ -59,7 +59,7 @@ public class Timer {
     }
 
     public interface TaskWithException {
-        void run() throws Exception;
+        void run() throws TaskException;
     }
 
     public interface TaskWithResult<T> {
@@ -67,6 +67,8 @@ public class Timer {
     }
 
     public interface TaskWithResultWithException<T> {
-        T run() throws Exception;
+        T run() throws TaskException;
     }
+
+    private static class TaskException extends Exception {}
 }

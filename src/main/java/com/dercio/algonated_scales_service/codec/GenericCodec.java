@@ -26,7 +26,9 @@ public class GenericCodec<T> implements MessageCodec<T, T> {
             buffer.appendInt(yourBytes.length);
             buffer.appendBytes(yourBytes);
             out.close();
-        } catch (IOException ignored) { }
+        } catch (IOException exception) {
+            log.error(exception.getMessage());
+        }
     }
 
     @Override
