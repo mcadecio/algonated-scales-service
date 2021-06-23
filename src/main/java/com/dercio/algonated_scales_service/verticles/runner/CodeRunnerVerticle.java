@@ -3,7 +3,6 @@ package com.dercio.algonated_scales_service.verticles.runner;
 import com.dercio.algonated_scales_service.response.Response;
 import com.dercio.algonated_scales_service.runner.CodeOptions;
 import com.dercio.algonated_scales_service.runner.CodeRunnerSummary;
-import com.dercio.algonated_scales_service.runner.executor.SelfClosingExecutor;
 import com.dercio.algonated_scales_service.verifier.IllegalMethodVerifier;
 import com.dercio.algonated_scales_service.verifier.ImportVerifier;
 import com.dercio.algonated_scales_service.verifier.VerifyResult;
@@ -17,14 +16,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.joor.Reflect;
 import org.joor.ReflectException;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static com.dercio.algonated_scales_service.verticles.VerticleAddresses.CODE_RUNNER_CONSUMER;
 import static com.dercio.algonated_scales_service.verticles.VerticleAddresses.SCALES_ANALYTICS_SUMMARY;
@@ -134,13 +127,11 @@ public class CodeRunnerVerticle extends AbstractVerticle {
         String errorMessage;
         try {
             var timer = Stopwatch.createStarted();
-            String rawSolution = compiledClass.call(options.getMethodToCall(), options.getWeights(), options.getIterations())
+            List<Integer> solution = compiledClass.call(options.getMethodToCall(), options.getWeights(), options.getIterations())
                     .get();
             timer.stop();
-            List<String> stringSolutions = compiledClass.get("solutions");
+            List<List<Integer>> solutions = compiledClass.get("solutions");
 
-            var solutions = binaryStringToList(stringSolutions);
-            var solution = transformStringToList(rawSolution);
             return ExecutionResult.builder()
                     .solution(solution)
                     .solutions(solutions)
@@ -148,11 +139,8 @@ public class CodeRunnerVerticle extends AbstractVerticle {
                     .errorMessage("Compile and Run was a success")
                     .timeElapsed(timer.elapsed(TimeUnit.MILLISECONDS))
                     .build();
-        } catch (ReflectException | ExecutionException exception) {
+        } catch (Exception exception) {
             errorMessage = exception.getMessage();
-        } catch (InterruptedException interruptedException) {
-            Thread.currentThread().interrupt();
-            errorMessage = interruptedException.getMessage();
         }
 
         return ExecutionResult.builder()
@@ -196,69 +184,4 @@ public class CodeRunnerVerticle extends AbstractVerticle {
         ).create();
     }
 
-    private List<Integer> transformStringToList(String solution) {
-        return Stream.of(solution.split(""))
-                .filter(s -> !s.isBlank())
-                .map(Integer::parseInt)
-                .collect(Collectors.toList());
-    }
-
-    private List<List<Integer>> binaryStringToList(List<String> rawSolutions) throws InterruptedException, ExecutionException {
-        if (rawSolutions.size() < 100) {
-            return rawSolutions.stream()
-                    .map(this::transformStringToList)
-                    .collect(Collectors.toList());
-        }
-
-        var nPartitions = 10.0;
-
-        List<List<String>> batches = createBatches(nPartitions, rawSolutions);
-
-        return runBatches(batches, nPartitions);
-    }
-
-    private List<String> getListFromTo(List<String> list, int counter, int size) {
-        List<String> strings = new ArrayList<>();
-        for (int i = counter; i < counter + size; i++) {
-            strings.add(list.get(i));
-        }
-        return strings;
-    }
-
-
-    private Callable<List<List<Integer>>> toCallableTask(List<String> batch) {
-        return () -> batch.stream()
-                .map(this::transformStringToList)
-                .collect(Collectors.toList());
-    }
-
-    private List<List<String>> createBatches(double nPartitions, List<String> rawSolutions) {
-        int batchNumber = (int) Math.ceil(rawSolutions.size() / nPartitions);
-        var counter = 0;
-
-        List<List<String>> batches = new ArrayList<>();
-        for (var i = 0; i < nPartitions - 1; i++) {
-            batches.add(getListFromTo(rawSolutions, counter, batchNumber));
-            counter = counter + batchNumber;
-        }
-        batches.add(getListFromTo(rawSolutions, counter, rawSolutions.size() - counter));
-
-        return batches;
-    }
-
-    private List<List<Integer>> runBatches(List<List<String>> batches, double nPartitions) throws InterruptedException, ExecutionException {
-        List<List<Integer>> result = new ArrayList<>();
-        try (var selfClosingExecutor = new SelfClosingExecutor((int) nPartitions)) {
-
-            List<Future<List<List<Integer>>>> futures = selfClosingExecutor
-                    .invokeAll(batches.stream()
-                            .map(this::toCallableTask)
-                            .collect(Collectors.toList()));
-
-            for (Future<List<List<Integer>>> future : futures) {
-                result.addAll(future.get());
-            }
-        }
-        return result;
-    }
 }

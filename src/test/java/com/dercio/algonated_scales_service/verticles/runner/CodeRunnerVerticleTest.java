@@ -62,6 +62,34 @@ class CodeRunnerVerticleTest {
     }
 
     @Test
+    @DisplayName("Compiles and runs a simple request and retrieves the list of solutions" +
+            "as a 2d list of integers")
+    void retrievesSolutionsAs2DListOfIntegers(VertxTestContext testContext) {
+        var weights = List.of(1.0, 2.0, 3.0, 4.0);
+        var solutions = List.of(
+                List.of(1, 1, 0, 1),
+                List.of(1, 0, 0, 1),
+                List.of(1, 1, 1, 1),
+                List.of(0, 1, 0, 1)
+        );
+        vertx.eventBus().<Response>request(
+                VerticleAddresses.CODE_RUNNER_CONSUMER.toString(),
+                typicalCodeOptions(),
+                messageReply -> testContext.verify(() -> {
+                    assertTrue(messageReply.succeeded());
+                    Response response = messageReply.result().body();
+                    assertTrue(response.isSuccess());
+                    assertEquals("Compile and Run was a success", response.getConsoleOutput());
+                    assertEquals(List.of(0, 1, 0, 1), response.getResult());
+                    assertEquals(weights, response.getWeights());
+                    assertNotNull(response.getSummary());
+                    assertEquals(solutions, response.getSolutions());
+                    testContext.completeNow();
+                })
+        );
+    }
+
+    @Test
     @DisplayName("Request fails when there is an illegal import")
     void illegalImportFound(VertxTestContext testContext) {
         var options = simpleCodeOptions();
@@ -134,9 +162,9 @@ class CodeRunnerVerticleTest {
                 .code("import java.util.ArrayList;\n" +
                         "import java.util.List;\n\n" +
                         "public class ScalesProblem {\n" +
-                        "    private List<String> solutions = new ArrayList<>();\n\n" +
-                        "    public String runScales(List<Double> weights, int iterations) {\n" +
-                        "        return \"11011\";\n" +
+                        "    private List<List<Integer>> solutions = new ArrayList<>();\n\n" +
+                        "    public List<Integer> runScales(List<Double> weights, int iterations) {\n" +
+                        "        return List.of(1,1,0,1,1);\n" +
                         "    }\n\n" +
                         "}")
                 .build();
@@ -149,6 +177,37 @@ class CodeRunnerVerticleTest {
         summary.setFitness(9.0);
         summary.setEfficacy(-800.0);
         return summary;
+    }
+
+    private CodeOptions typicalCodeOptions() {
+        List<Double> weights = List.of(
+                1.0,
+                2.0,
+                3.0,
+                4.0
+        );
+        return CodeOptions.builder()
+                .className("ScalesProblem")
+                .packageName("com.exercise")
+                .methodToCall("runScales")
+                .iterations(5000)
+                .importsAllowed(List.of("import java.util.List;", "import java.util.ArrayList;"))
+                .illegalMethods(Collections.emptyList())
+                .weights(weights)
+                .code("import java.util.ArrayList;\n" +
+                        "import java.util.List;\n\n" +
+                        "public class ScalesProblem {\n" +
+                        "    private final List<List<Integer>> solutions = new ArrayList<>();\n" +
+                        "\n" +
+                        "    public List<Integer> runScales(List<Double> weights, int iterations) {\n" +
+                        "        solutions.add(List.of(1,1,0,1));\n" +
+                        "        solutions.add(List.of(1,0,0,1));\n" +
+                        "        solutions.add(List.of(1,1,1,1));\n" +
+                        "        solutions.add(List.of(0,1,0,1));\n" +
+                        "        return List.of(0,1,0,1);\n" +
+                        "    }\n" +
+                        "}")
+                .build();
     }
 
     @AfterAll
