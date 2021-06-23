@@ -10,7 +10,7 @@ import io.vertx.core.Promise;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class CodeRegisterVerticle extends AbstractVerticle {
+public class CodecRegisterVerticle extends AbstractVerticle {
 
     @Override
     public void start(Promise<Void> startPromise) {

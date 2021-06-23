@@ -2,6 +2,7 @@ package com.dercio.algonated_scales_service.response;
 
 import com.dercio.algonated_scales_service.runner.CodeRunnerSummary;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import io.vertx.core.json.Json;
 import lombok.ToString;
 
 import java.util.Collections;
@@ -45,7 +46,7 @@ public class Response {
         return this;
     }
 
-    public Object getData() {
+    public Object getWeights() {
         return data;
     }
 
@@ -70,5 +71,9 @@ public class Response {
     public Response setSolutions(List<List<Integer>> solutions) {
         this.solutions = solutions;
         return this;
+    }
+
+    public String encode() {
+        return Json.encode(this);
     }
 }

@@ -27,7 +27,7 @@ public class ScalesRunner {
         Algorithm<Solution, List<Double>> algorithm = Algorithm.getScalesAlgorithm(request);
 
         Stopwatch timer = Stopwatch.createStarted();
-        solution = algorithm.run(request.getData(), request.getIterations()).getSolution();
+        solution = algorithm.run(request.getWeights(), request.getIterations()).getSolution();
         timer.stop();
 
         solutions = algorithm.getSolutions();
@@ -39,8 +39,8 @@ public class ScalesRunner {
     private void buildSummary(long elapsed) {
         summary.setTimeRun(elapsed);
         summary.setIterations(request.getIterations());
-        summary.setFitness(new ScalesFitnessCalculator().calculate(request.getData(), solution));
-        summary.setEfficacy(new ScalesEfficiencyCalculator().calculate(request.getData(), solution));
+        summary.setFitness(new ScalesFitnessCalculator().calculate(request.getWeights(), solution));
+        summary.setEfficacy(new ScalesEfficiencyCalculator().calculate(request.getWeights(), solution));
     }
 
     public Response toResponse() {
@@ -48,7 +48,7 @@ public class ScalesRunner {
                 .setSuccess(true)
                 .setConsoleOutput("Compile and Run was a success!")
                 .setResult(solution)
-                .setData(request.getData())
+                .setData(request.getWeights())
                 .setSummary(summary)
                 .setSolutions(solutions);
     }

@@ -6,7 +6,8 @@ import lombok.RequiredArgsConstructor;
 public enum VerticleAddresses {
 
     SCALES_ANALYTICS_SUMMARY("scales-analytics-summary"),
-    CODE_RUNNER_CONSUMER("code-runner-consumer");
+    CODE_RUNNER_CONSUMER("code-runner-consumer"),
+    SCALES_VERTICLE("scales-verticle");
 
     private final String address;
 

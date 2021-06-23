@@ -1,10 +1,9 @@
-package com.dercio.algonated_scales_service.verticles;
+package com.dercio.algonated_scales_service.verticles.analytics;
 
 import com.dercio.algonated_scales_service.runner.CodeRunnerSummary;
 import com.dercio.algonated_scales_service.runner.calculator.Calculator;
 import com.dercio.algonated_scales_service.runner.calculator.ScalesEfficiencyCalculator;
 import com.dercio.algonated_scales_service.runner.calculator.ScalesFitnessCalculator;
-import com.dercio.algonated_scales_service.verticles.analytics.AnalyticsRequest;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Promise;
 import io.vertx.core.eventbus.MessageConsumer;

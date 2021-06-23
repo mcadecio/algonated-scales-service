@@ -2,44 +2,36 @@ package com.dercio.algonated_scales_service;
 
 import com.dercio.algonated_scales_service.response.Response;
 import com.dercio.algonated_scales_service.runner.CodeOptions;
-import com.dercio.algonated_scales_service.runner.ScalesCodeRunner;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.gson.Gson;
-import io.vertx.core.AbstractVerticle;
-import io.vertx.core.Promise;
-import io.vertx.core.Vertx;
+import com.dercio.algonated_scales_service.verticles.CodecRegisterVerticle;
+import com.dercio.algonated_scales_service.verticles.ScalesVerticle;
+import com.dercio.algonated_scales_service.verticles.VerticleAddresses;
+import com.dercio.algonated_scales_service.verticles.analytics.ScalesAnalyticsVerticle;
+import com.dercio.algonated_scales_service.verticles.runner.CodeRunnerVerticle;
+import io.vertx.core.*;
 import io.vertx.core.http.HttpServer;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
 import io.vertx.ext.web.handler.BodyHandler;
+import io.vertx.ext.web.handler.CorsHandler;
 import lombok.extern.slf4j.Slf4j;
-
-import java.util.List;
 
 @Slf4j
 public class Application extends AbstractVerticle {
 
-    private final Gson gson = new Gson();
-    private final ObjectMapper mapper = new ObjectMapper();
     private HttpServer httpServer;
 
     @Override
     public void start(Promise<Void> startPromise) {
         final var router = Router.router(vertx);
-        router.route().handler(BodyHandler.create());
+        router.route().handler(BodyHandler.create()); // config
+        router.route().handler(createCorsHandler()); // config
         router.route().handler(rc -> {
             log.info("Received request on --> {} from --> {}", rc.request().path(), rc.request().host());
             rc.response().setChunked(true);
             rc.next();
         });
 
-        router.get().handler(rc -> {
-            rc.response().write("Hello, World!");
-            rc.next();
-        });
-
-        router.post("/exercise/submit/scales")
-                .handler(rc -> executeBlocking(() -> handleScalesRequest(rc), rc));
+        router.post("/exercise/submit/scales").handler(this::handleScalesRequest);
 
         router.route().handler(rc -> {
             log.info("Dispatched response to --> {}", rc.request().host());
@@ -47,7 +39,7 @@ public class Application extends AbstractVerticle {
         });
 
         router.route().failureHandler(event -> {
-
+            log.error("Error: ", event.failure());
             if (event.failure() instanceof NullPointerException) {
                 event.response()
                         .setStatusCode(503)
@@ -59,8 +51,7 @@ public class Application extends AbstractVerticle {
             }
         });
 
-
-        var port = Integer.parseInt(System.getProperty("heroku.port", "1234"));
+        var port = Integer.parseInt(System.getProperty("heroku.port", "80"));
         httpServer = vertx.createHttpServer();
         httpServer
                 .requestHandler(router)
@@ -82,53 +73,44 @@ public class Application extends AbstractVerticle {
     }
 
     private void handleScalesRequest(RoutingContext rc) {
-        Timer.runTimedTask(() -> {
-            final String prettyRequest = rc.getBodyAsJson().encodePrettily();
-            log.debug("This was the code submitted -> \n{}", prettyRequest);
-
-            final var codeOptions = gson.fromJson(prettyRequest, CodeOptions.class);
-
-            List<Double> data = gson.<List<Double>>fromJson(
-                    rc.getBodyAsJson()
-                            .getJsonArray("data")
-                            .encode(),
-                    List.class
-            );
-
-            sendResponse(rc, Timer.runTimedTask(
-                    () -> new ScalesCodeRunner(codeOptions, data).compile().execute(),
-                    "Code Runner"
-            ).toResponse());
-
-        }, "Scales Request");
-
-    }
-
-    private void executeBlocking(Runnable runnable, RoutingContext rc) {
-        vertx.executeBlocking(promise -> {
-            runnable.run();
-            promise.complete();
-        }, result -> {
-            if (result.failed()) {
-                rc.fail(result.cause());
-            }
-        });
-    }
-
-    private void sendResponse(RoutingContext rc, Response response) {
-        String chunk = Timer.runTimedTaskWithException(
-                () -> mapper.writeValueAsString(response),
-                "Mapper timer",
-                "{}"
+        vertx.eventBus().<Response>request(
+                VerticleAddresses.SCALES_VERTICLE.toString(),
+                rc.getBodyAsJson().mapTo(CodeOptions.class),
+                reply -> rc.response()
+                        .setChunked(true)
+                        .putHeader("Content-type", "application/json")
+                        .write(reply.result().body().encode())
+                        .end()
         );
+    }
 
-        rc.response()
-                .putHeader("Content-type", "application/json")
-                .write(chunk);
-        rc.next();
+    private String getAllowedDomain() {
+        String allowedDomain = System.getProperty("cors.allowed.domain", ".*://localhost:.*");
+        log.info(allowedDomain);
+        return allowedDomain;
+    }
+
+    private Handler<RoutingContext> createCorsHandler() {
+        return CorsHandler.create(getAllowedDomain())
+                .allowedMethod(io.vertx.core.http.HttpMethod.GET)
+                .allowedMethod(io.vertx.core.http.HttpMethod.POST)
+                .allowedMethod(io.vertx.core.http.HttpMethod.OPTIONS)
+                .allowCredentials(true)
+                .allowedHeader("Authorization")
+                .allowedHeader("Access-Control-Request-Method")
+                .allowedHeader("Access-Control-Allow-Credentials")
+                .allowedHeader("Access-Control-Allow-Origin")
+                .allowedHeader("Access-Control-Allow-Headers")
+                .allowedHeader("Content-Type");
     }
 
     public static void main(String[] args) {
-        Vertx.vertx().deployVerticle(new Application());
+        var vertx = Vertx.vertx();
+        var deployment = new DeploymentOptions();
+        vertx.deployVerticle(new CodecRegisterVerticle(), deployment);
+        vertx.deployVerticle(new ScalesVerticle(), deployment);
+        vertx.deployVerticle(new CodeRunnerVerticle(), deployment);
+        vertx.deployVerticle(new ScalesAnalyticsVerticle(), deployment);
+        vertx.deployVerticle(new Application(), deployment);
     }
 }

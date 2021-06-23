@@ -3,8 +3,8 @@ package com.dercio.algonated_scales_service.verticles.runner;
 import com.dercio.algonated_scales_service.response.Response;
 import com.dercio.algonated_scales_service.runner.CodeOptions;
 import com.dercio.algonated_scales_service.runner.CodeRunnerSummary;
-import com.dercio.algonated_scales_service.verticles.CodeRegisterVerticle;
-import com.dercio.algonated_scales_service.verticles.ScalesAnalyticsVerticle;
+import com.dercio.algonated_scales_service.verticles.CodecRegisterVerticle;
+import com.dercio.algonated_scales_service.verticles.analytics.ScalesAnalyticsVerticle;
 import com.dercio.algonated_scales_service.verticles.VerticleAddresses;
 import io.vertx.core.Vertx;
 import io.vertx.junit5.VertxExtension;
@@ -27,7 +27,7 @@ class CodeRunnerVerticleTest {
 
     @BeforeAll
     public static void prepare(VertxTestContext testContext) {
-        vertx.deployVerticle(new CodeRegisterVerticle());
+        vertx.deployVerticle(new CodecRegisterVerticle());
         vertx.deployVerticle(new ScalesAnalyticsVerticle());
         vertx.deployVerticle(
                 new CodeRunnerVerticle(),
@@ -53,7 +53,7 @@ class CodeRunnerVerticleTest {
                     assertTrue(response.isSuccess());
                     assertEquals("Compile and Run was a success", response.getConsoleOutput());
                     assertEquals(List.of(1, 1, 0, 1, 1), response.getResult());
-                    assertEquals(weights, response.getData());
+                    assertEquals(weights, response.getWeights());
                     assertEquals(simpleCodeSummary(), response.getSummary());
                     assertEquals(Collections.emptyList(), response.getSolutions());
                     testContext.completeNow();

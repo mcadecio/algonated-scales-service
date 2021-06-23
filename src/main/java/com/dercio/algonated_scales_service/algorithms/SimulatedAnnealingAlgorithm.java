@@ -1,16 +1,15 @@
 package com.dercio.algonated_scales_service.algorithms;
 
 import com.dercio.algonated_scales_service.random.UniformRandomGenerator;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+@Slf4j
 public class SimulatedAnnealingAlgorithm implements Algorithm<Solution, List<Double>> {
 
-    private static final Logger logger = LoggerFactory.getLogger(SimulatedAnnealingAlgorithm.class);
     private final UniformRandomGenerator randomGenerator = new UniformRandomGenerator();
     private final List<List<Integer>> solutions = new ArrayList<>();
     private Double optionalTemp;
@@ -18,7 +17,7 @@ public class SimulatedAnnealingAlgorithm implements Algorithm<Solution, List<Dou
 
     @Override
     public Solution run(List<Double> weights, int iterations) {
-        logger.info("Running SA");
+        log.info("Running SA");
 
         double temperature = Optional.ofNullable(optionalTemp).orElse(1000.0);
         double coolingRate = Optional.ofNullable(optionalCR).orElse(calcCR(temperature, iterations));

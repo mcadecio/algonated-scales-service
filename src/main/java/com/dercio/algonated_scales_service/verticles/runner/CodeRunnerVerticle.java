@@ -107,6 +107,7 @@ public class CodeRunnerVerticle extends AbstractVerticle {
                                 .setSummary(codeRunnerSummary)
                                 .setSolutions(executionResult.getSolutions()));
                     } else {
+                        log.error("Error: {}", reply.cause().getMessage());
                         message.fail(400, reply.cause().getMessage());
                     }
                 }

@@ -29,7 +29,7 @@ public class DemoRequest<T> {
         return this;
     }
 
-    public T getData() {
+    public T getWeights() {
         return data;
     }
 

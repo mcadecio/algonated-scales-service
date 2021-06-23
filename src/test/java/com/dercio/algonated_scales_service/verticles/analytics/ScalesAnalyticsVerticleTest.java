@@ -1,7 +1,8 @@
-package com.dercio.algonated_scales_service.verticles;
+package com.dercio.algonated_scales_service.verticles.analytics;
 
 import com.dercio.algonated_scales_service.runner.CodeRunnerSummary;
-import com.dercio.algonated_scales_service.verticles.analytics.AnalyticsRequest;
+import com.dercio.algonated_scales_service.verticles.CodecRegisterVerticle;
+import com.dercio.algonated_scales_service.verticles.VerticleAddresses;
 import io.vertx.core.Vertx;
 import io.vertx.junit5.VertxExtension;
 import io.vertx.junit5.VertxTestContext;
@@ -22,7 +23,7 @@ class ScalesAnalyticsVerticleTest {
 
     @BeforeAll
     public static void prepare(VertxTestContext testContext) {
-        vertx.deployVerticle(new CodeRegisterVerticle());
+        vertx.deployVerticle(new CodecRegisterVerticle());
         vertx.deployVerticle(
                 new ScalesAnalyticsVerticle(
                         (data, solution) -> 6.0,
