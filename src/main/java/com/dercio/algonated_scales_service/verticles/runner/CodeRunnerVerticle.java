@@ -130,6 +130,7 @@ public class CodeRunnerVerticle extends ConsumerVerticle {
                     .timeElapsed(timer.elapsed(TimeUnit.MILLISECONDS))
                     .build();
         } catch (Exception exception) {
+            log.error("Exception while executing code: ", exception);
             errorMessage = exception.getMessage();
         }
 
