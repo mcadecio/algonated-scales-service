@@ -6,12 +6,12 @@ import com.dercio.algonated_scales_service.runner.CodeRunnerSummary;
 import com.dercio.algonated_scales_service.verifier.IllegalMethodVerifier;
 import com.dercio.algonated_scales_service.verifier.ImportVerifier;
 import com.dercio.algonated_scales_service.verifier.VerifyResult;
+import com.dercio.algonated_scales_service.verticles.ConsumerVerticle;
 import com.dercio.algonated_scales_service.verticles.analytics.AnalyticsRequest;
 import com.google.common.base.Stopwatch;
 import io.vertx.core.Promise;
-import io.vertx.reactivex.core.AbstractVerticle;
-import io.vertx.reactivex.core.eventbus.Message;
-import io.vertx.reactivex.core.eventbus.MessageConsumer;
+import io.vertx.core.eventbus.Message;
+import io.vertx.core.eventbus.MessageConsumer;
 import lombok.extern.slf4j.Slf4j;
 import org.joor.Reflect;
 import org.joor.ReflectException;
@@ -23,7 +23,7 @@ import static com.dercio.algonated_scales_service.verticles.VerticleAddresses.CO
 import static com.dercio.algonated_scales_service.verticles.VerticleAddresses.SCALES_ANALYTICS_SUMMARY;
 
 @Slf4j
-public class CodeRunnerVerticle extends AbstractVerticle {
+public class CodeRunnerVerticle extends ConsumerVerticle {
 
     private static final String PLEASE_REMOVE = "Please remove the following ";
 
@@ -31,31 +31,21 @@ public class CodeRunnerVerticle extends AbstractVerticle {
 
     @Override
     public void start(Promise<Void> startPromise) {
-        consumer = vertx.eventBus().consumer(CODE_RUNNER_CONSUMER.toString());
+        consumer = vertx.eventBus().consumer(getAddress());
         consumer
                 .handler(this::handleMessage)
-                .completionHandler(result -> {
-                    if (result.succeeded()) {
-                        log.info("Registered -{}- consumer", CODE_RUNNER_CONSUMER);
-                    } else {
-                        log.info("Failed to register -{}- consumer", CODE_RUNNER_CONSUMER);
-                    }
-                    startPromise.complete();
-                });
+                .completionHandler(result -> logRegistration(startPromise, result));
     }
 
     @Override
     public void stop(Promise<Void> stopPromise) {
-        consumer.unregister(result -> {
-            if (result.succeeded()) {
-                log.info("UnRegistered -{}- consumer", CODE_RUNNER_CONSUMER);
-            } else {
-                log.info("Failed to unregister -{}- consumer", CODE_RUNNER_CONSUMER);
-            }
-            stopPromise.complete();
-        });
+        consumer.unregister(result -> logUnregistration(stopPromise, result));
     }
 
+    @Override
+    public String getAddress() {
+        return CODE_RUNNER_CONSUMER.toString();
+    }
 
     private void handleMessage(Message<CodeOptions> message) {
         log.info("Consuming message");

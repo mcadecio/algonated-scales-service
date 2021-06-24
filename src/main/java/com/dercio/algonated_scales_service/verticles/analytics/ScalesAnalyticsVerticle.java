@@ -4,7 +4,7 @@ import com.dercio.algonated_scales_service.runner.CodeRunnerSummary;
 import com.dercio.algonated_scales_service.runner.calculator.Calculator;
 import com.dercio.algonated_scales_service.runner.calculator.ScalesEfficiencyCalculator;
 import com.dercio.algonated_scales_service.runner.calculator.ScalesFitnessCalculator;
-import io.vertx.core.AbstractVerticle;
+import com.dercio.algonated_scales_service.verticles.ConsumerVerticle;
 import io.vertx.core.Promise;
 import io.vertx.core.eventbus.MessageConsumer;
 import lombok.extern.slf4j.Slf4j;
@@ -14,7 +14,7 @@ import java.util.List;
 import static com.dercio.algonated_scales_service.verticles.VerticleAddresses.SCALES_ANALYTICS_SUMMARY;
 
 @Slf4j
-public class ScalesAnalyticsVerticle extends AbstractVerticle {
+public class ScalesAnalyticsVerticle extends ConsumerVerticle {
 
     private MessageConsumer<AnalyticsRequest> consumer;
     private final Calculator<List<Double>> efficiencyCalculator;
@@ -36,22 +36,22 @@ public class ScalesAnalyticsVerticle extends AbstractVerticle {
 
     @Override
     public void start(Promise<Void> startPromise) {
-        consumer = vertx.eventBus().consumer(SCALES_ANALYTICS_SUMMARY.toString());
-
+        consumer = vertx.eventBus().consumer(getAddress());
         consumer.handler(message -> {
             log.info("Consuming message");
             var request = message.body();
             message.reply(createSummary(request));
-        });
+        }).completionHandler(result -> logRegistration(startPromise, result));
+    }
 
-        consumer.completionHandler(result -> {
-            if (result.succeeded()) {
-                log.info("Registered -{}- consumer", SCALES_ANALYTICS_SUMMARY);
-            } else {
-                log.info("Failed to register -{}- consumer", SCALES_ANALYTICS_SUMMARY);
-            }
-            startPromise.complete();
-        });
+    @Override
+    public void stop(Promise<Void> stopPromise) {
+        consumer.unregister(result -> logUnregistration(stopPromise, result));
+    }
+
+    @Override
+    public String getAddress() {
+        return SCALES_ANALYTICS_SUMMARY.toString();
     }
 
     private CodeRunnerSummary createSummary(AnalyticsRequest request) {
@@ -61,18 +61,6 @@ public class ScalesAnalyticsVerticle extends AbstractVerticle {
         summary.setEfficacy(efficiencyCalculator.calculate(request.getWeights(), request.getSolution()));
         summary.setFitness(fitnessCalculator.calculate(request.getWeights(), request.getSolution()));
         return summary;
-    }
-
-    @Override
-    public void stop(Promise<Void> stopPromise) {
-        consumer.unregister(result -> {
-            if (result.succeeded()) {
-                log.info("UnRegistered -{}- consumer", SCALES_ANALYTICS_SUMMARY);
-            } else {
-                log.info("Failed to unregister -{}- consumer", SCALES_ANALYTICS_SUMMARY);
-            }
-            stopPromise.complete();
-        });
     }
 
 }
