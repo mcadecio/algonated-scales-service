@@ -1,4 +1,4 @@
-package com.dercio.algonated_scales_service.codec;
+package com.dercio.algonated_scales_service.verticles.codec;
 
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.eventbus.MessageCodec;

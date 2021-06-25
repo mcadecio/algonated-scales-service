@@ -1,4 +1,4 @@
-package com.dercio.algonated_scales_service.verifier;
+package com.dercio.algonated_scales_service.verticles.runner.code.verifier;
 
 import java.util.Collections;
 import java.util.List;

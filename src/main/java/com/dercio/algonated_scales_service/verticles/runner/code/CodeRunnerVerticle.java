@@ -1,13 +1,13 @@
-package com.dercio.algonated_scales_service.verticles.runner;
+package com.dercio.algonated_scales_service.verticles.runner.code;
 
 import com.dercio.algonated_scales_service.response.Response;
-import com.dercio.algonated_scales_service.runner.CodeOptions;
-import com.dercio.algonated_scales_service.runner.CodeRunnerSummary;
-import com.dercio.algonated_scales_service.verifier.IllegalMethodVerifier;
-import com.dercio.algonated_scales_service.verifier.ImportVerifier;
-import com.dercio.algonated_scales_service.verifier.VerifyResult;
+import com.dercio.algonated_scales_service.verticles.runner.CodeOptions;
+import com.dercio.algonated_scales_service.verticles.analytics.CodeRunnerSummary;
+import com.dercio.algonated_scales_service.verticles.runner.code.verifier.IllegalMethodVerifier;
+import com.dercio.algonated_scales_service.verticles.runner.code.verifier.ImportVerifier;
 import com.dercio.algonated_scales_service.verticles.ConsumerVerticle;
 import com.dercio.algonated_scales_service.verticles.analytics.AnalyticsRequest;
+import com.dercio.algonated_scales_service.verticles.runner.code.verifier.VerifyResult;
 import com.google.common.base.Stopwatch;
 import io.vertx.core.Promise;
 import io.vertx.core.eventbus.Message;

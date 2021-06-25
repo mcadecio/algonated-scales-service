@@ -1,6 +1,6 @@
 package com.dercio.algonated_scales_service.algorithms;
 
-import com.dercio.algonated_scales_service.runner.demo.DemoRequest;
+import com.dercio.algonated_scales_service.verticles.runner.demo.DemoRequest;
 import java.util.List;
 
 public interface Algorithm<T, D> {

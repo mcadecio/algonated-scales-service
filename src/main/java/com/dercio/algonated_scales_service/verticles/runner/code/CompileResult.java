@@ -1,4 +1,4 @@
-package com.dercio.algonated_scales_service.verticles.runner;
+package com.dercio.algonated_scales_service.verticles.runner.code;
 
 import lombok.Builder;
 import lombok.Getter;

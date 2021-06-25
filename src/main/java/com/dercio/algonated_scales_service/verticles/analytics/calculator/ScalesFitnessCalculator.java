@@ -1,4 +1,4 @@
-package com.dercio.algonated_scales_service.runner.calculator;
+package com.dercio.algonated_scales_service.verticles.analytics.calculator;
 
 
 import com.dercio.algonated_scales_service.algorithms.ScalesSolution;

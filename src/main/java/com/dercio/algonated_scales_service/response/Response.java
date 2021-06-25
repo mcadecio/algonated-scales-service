@@ -1,6 +1,6 @@
 package com.dercio.algonated_scales_service.response;
 
-import com.dercio.algonated_scales_service.runner.CodeRunnerSummary;
+import com.dercio.algonated_scales_service.verticles.analytics.CodeRunnerSummary;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.vertx.core.json.Json;
 import lombok.ToString;

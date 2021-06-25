@@ -1,4 +1,4 @@
-package com.dercio.algonated_scales_service.runner.demo;
+package com.dercio.algonated_scales_service.verticles.runner.demo;
 
 public class DemoRequest<T> {
 

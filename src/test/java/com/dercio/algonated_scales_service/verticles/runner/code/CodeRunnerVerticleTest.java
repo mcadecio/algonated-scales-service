@@ -1,11 +1,12 @@
-package com.dercio.algonated_scales_service.verticles.runner;
+package com.dercio.algonated_scales_service.verticles.runner.code;
 
 import com.dercio.algonated_scales_service.response.Response;
-import com.dercio.algonated_scales_service.runner.CodeOptions;
-import com.dercio.algonated_scales_service.runner.CodeRunnerSummary;
-import com.dercio.algonated_scales_service.verticles.CodecRegisterVerticle;
+import com.dercio.algonated_scales_service.verticles.analytics.CodeRunnerSummary;
+import com.dercio.algonated_scales_service.verticles.codec.CodecRegisterVerticle;
 import com.dercio.algonated_scales_service.verticles.analytics.ScalesAnalyticsVerticle;
 import com.dercio.algonated_scales_service.verticles.VerticleAddresses;
+import com.dercio.algonated_scales_service.verticles.runner.CodeOptions;
+import com.dercio.algonated_scales_service.verticles.runner.code.CodeRunnerVerticle;
 import io.vertx.core.Vertx;
 import io.vertx.junit5.VertxExtension;
 import io.vertx.junit5.VertxTestContext;

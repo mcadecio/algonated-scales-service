@@ -1,9 +1,8 @@
-package com.dercio.algonated_scales_service.verticles;
+package com.dercio.algonated_scales_service.verticles.codec;
 
-import com.dercio.algonated_scales_service.codec.GenericCodec;
 import com.dercio.algonated_scales_service.response.Response;
-import com.dercio.algonated_scales_service.runner.CodeOptions;
-import com.dercio.algonated_scales_service.runner.CodeRunnerSummary;
+import com.dercio.algonated_scales_service.verticles.runner.CodeOptions;
+import com.dercio.algonated_scales_service.verticles.analytics.CodeRunnerSummary;
 import com.dercio.algonated_scales_service.verticles.analytics.AnalyticsRequest;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Promise;

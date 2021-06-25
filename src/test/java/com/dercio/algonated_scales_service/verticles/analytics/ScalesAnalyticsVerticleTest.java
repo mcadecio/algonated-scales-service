@@ -1,7 +1,6 @@
 package com.dercio.algonated_scales_service.verticles.analytics;
 
-import com.dercio.algonated_scales_service.runner.CodeRunnerSummary;
-import com.dercio.algonated_scales_service.verticles.CodecRegisterVerticle;
+import com.dercio.algonated_scales_service.verticles.codec.CodecRegisterVerticle;
 import com.dercio.algonated_scales_service.verticles.VerticleAddresses;
 import io.vertx.core.Vertx;
 import io.vertx.junit5.VertxExtension;

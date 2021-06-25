@@ -2,12 +2,12 @@ package com.dercio.algonated_scales_service;
 
 import com.dercio.algonated_scales_service.config.HttpConfig;
 import com.dercio.algonated_scales_service.response.Response;
-import com.dercio.algonated_scales_service.runner.CodeOptions;
-import com.dercio.algonated_scales_service.verticles.CodecRegisterVerticle;
-import com.dercio.algonated_scales_service.verticles.ScalesVerticle;
+import com.dercio.algonated_scales_service.verticles.runner.CodeOptions;
+import com.dercio.algonated_scales_service.verticles.codec.CodecRegisterVerticle;
+import com.dercio.algonated_scales_service.verticles.scales.ScalesSubmissionVerticle;
 import com.dercio.algonated_scales_service.verticles.VerticleAddresses;
 import com.dercio.algonated_scales_service.verticles.analytics.ScalesAnalyticsVerticle;
-import com.dercio.algonated_scales_service.verticles.runner.CodeRunnerVerticle;
+import com.dercio.algonated_scales_service.verticles.runner.code.CodeRunnerVerticle;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Promise;
@@ -87,7 +87,7 @@ public class Application extends AbstractVerticle {
 
     private void handleScalesRequest(RoutingContext rc) {
         vertx.eventBus().<Response>request(
-                VerticleAddresses.SCALES_VERTICLE.toString(),
+                VerticleAddresses.SCALES_SUBMISSION.toString(),
                 rc.getBodyAsJson().mapTo(CodeOptions.class),
                 reply -> {
                     if (reply.succeeded()) {
@@ -105,7 +105,7 @@ public class Application extends AbstractVerticle {
         var vertx = Vertx.vertx();
         var deployment = new DeploymentOptions();
         vertx.deployVerticle(new CodecRegisterVerticle(), deployment);
-        vertx.deployVerticle(new ScalesVerticle(), deployment);
+        vertx.deployVerticle(new ScalesSubmissionVerticle(), deployment);
         vertx.deployVerticle(new CodeRunnerVerticle(), deployment);
         vertx.deployVerticle(new ScalesAnalyticsVerticle(), deployment);
         vertx.deployVerticle(new Application(), deployment);

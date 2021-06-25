@@ -7,7 +7,9 @@ public enum VerticleAddresses {
 
     SCALES_ANALYTICS_SUMMARY("scales-analytics-summary"),
     CODE_RUNNER_CONSUMER("code-runner-consumer"),
-    SCALES_VERTICLE("scales-verticle");
+    DEMO_RUNNER_CONSUMER("demo-runner-consumer"),
+    SCALES_SUBMISSION("scales-submission-consumer"),
+    SCALES_DEMO("scales-demo-consumer");
 
     private final String address;
 

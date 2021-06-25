@@ -1,11 +1,11 @@
-package com.dercio.algonated_scales_service.runner.demo;
+package com.dercio.algonated_scales_service.verticles.runner.demo;
 
 import com.dercio.algonated_scales_service.algorithms.Algorithm;
 import com.dercio.algonated_scales_service.algorithms.Solution;
 import com.dercio.algonated_scales_service.response.Response;
-import com.dercio.algonated_scales_service.runner.CodeRunnerSummary;
-import com.dercio.algonated_scales_service.runner.calculator.ScalesEfficiencyCalculator;
-import com.dercio.algonated_scales_service.runner.calculator.ScalesFitnessCalculator;
+import com.dercio.algonated_scales_service.verticles.analytics.CodeRunnerSummary;
+import com.dercio.algonated_scales_service.verticles.analytics.calculator.ScalesEfficiencyCalculator;
+import com.dercio.algonated_scales_service.verticles.analytics.calculator.ScalesFitnessCalculator;
 import com.google.common.base.Stopwatch;
 
 import java.util.Collections;

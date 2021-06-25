@@ -1,8 +1,11 @@
-package com.dercio.algonated_scales_service.verticles;
+package com.dercio.algonated_scales_service.verticles.scales;
 
 import com.dercio.algonated_scales_service.response.Response;
-import com.dercio.algonated_scales_service.runner.CodeOptions;
-import com.dercio.algonated_scales_service.verticles.runner.CodeRunnerVerticle;
+import com.dercio.algonated_scales_service.verticles.VerticleAddresses;
+import com.dercio.algonated_scales_service.verticles.runner.CodeOptions;
+import com.dercio.algonated_scales_service.verticles.codec.CodecRegisterVerticle;
+import com.dercio.algonated_scales_service.verticles.runner.code.CodeRunnerVerticle;
+import com.dercio.algonated_scales_service.verticles.scales.ScalesSubmissionVerticle;
 import io.vertx.core.Promise;
 import io.vertx.core.Vertx;
 import io.vertx.junit5.VertxExtension;
@@ -18,7 +21,7 @@ import java.util.function.Function;
 import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(VertxExtension.class)
-class ScalesVerticleTest {
+class ScalesSubmissionVerticleTest {
     private static final Vertx vertx = Vertx.vertx();
 
     private static Function<CodeOptions, Response> mockedBehavior;
@@ -42,7 +45,7 @@ class ScalesVerticleTest {
 
         });
         vertx.deployVerticle(
-                new ScalesVerticle(),
+                new ScalesSubmissionVerticle(),
                 testContext.succeeding(id -> testContext.completeNow())
         );
     }
@@ -59,7 +62,7 @@ class ScalesVerticleTest {
                 .setConsoleOutput(options.getClassName());
 
         vertx.eventBus().<Response>request(
-                VerticleAddresses.SCALES_VERTICLE.toString(),
+                VerticleAddresses.SCALES_SUBMISSION.toString(),
                 request,
                 messageReply -> testContext.verify(() -> {
                     var response = messageReply.result().body();
@@ -83,7 +86,7 @@ class ScalesVerticleTest {
                 .setConsoleOutput("Error");
 
         vertx.eventBus().<Response>request(
-                VerticleAddresses.SCALES_VERTICLE.toString(),
+                VerticleAddresses.SCALES_SUBMISSION.toString(),
                 request,
                 messageReply -> testContext.verify(() -> {
                     var response = messageReply.result().body();

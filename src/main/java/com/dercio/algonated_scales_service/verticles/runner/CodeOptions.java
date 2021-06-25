@@ -1,4 +1,4 @@
-package com.dercio.algonated_scales_service.runner;
+package com.dercio.algonated_scales_service.verticles.runner;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.*;
