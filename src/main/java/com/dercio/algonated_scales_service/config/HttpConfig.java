@@ -33,25 +33,18 @@ public class HttpConfig {
     }
 
     public List<String> getAllowedDomains() {
-        log.info("{}", System.getProperties());
-        var allowedDomains = Stream.of(System.getProperty("cors.allowed.domain", ".*://localhost:.*"))
+        return Stream.of(System.getProperty("cors.allowed.domain", ".*://localhost:.*"))
                 .map(string -> string.split(","))
                 .flatMap(Stream::of)
                 .collect(Collectors.toList());
-        log.info("Allowed domains - {}", allowedDomains);
-        return allowedDomains;
     }
 
     public int getPort() {
-        var port = Integer.parseInt(System.getProperty("heroku.port", "80"));
-        log.info("Port - {}", port);
-        return port;
+        return Integer.parseInt(System.getProperty("heroku.port", "80"));
     }
 
     public String getHost() {
-        var host = System.getProperty("server.host", "0.0.0.0");
-        log.info("Host - {}", host);
-        return host;
+        return System.getProperty("server.host", "0.0.0.0");
     }
 
 }
