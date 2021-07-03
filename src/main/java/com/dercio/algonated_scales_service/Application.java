@@ -16,9 +16,12 @@ import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Promise;
 import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpServer;
+import io.vertx.core.json.Json;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
 import lombok.extern.slf4j.Slf4j;
+
+import java.util.HashMap;
 
 @Slf4j
 public class Application extends AbstractVerticle {
@@ -43,6 +46,9 @@ public class Application extends AbstractVerticle {
                 .handler(this::handleDemoRequest)
                 .handler(this::logResponseDispatch)
                 .failureHandler(this::failureHandler);
+
+        router.get("/health")
+                .handler(this::handleHealth);
 
         httpServer = vertx.createHttpServer();
         httpServer
@@ -128,6 +134,18 @@ public class Application extends AbstractVerticle {
                         rc.fail(reply.cause());
                     }
                 });
+    }
+
+    private void handleHealth(RoutingContext rc) {
+        var reply = new HashMap<>();
+        var runtime = Runtime.getRuntime();
+        reply.put("status", "up");
+        reply.put("freeMemory", runtime.freeMemory());
+        reply.put("maxMemory", runtime.maxMemory());
+        reply.put("totalMemory", runtime.totalMemory());
+        rc.response()
+                .putHeader("Content-type", APPLICATION_JSON)
+                .end(Json.encode(reply));
     }
 
     public static void main(String[] args) {
