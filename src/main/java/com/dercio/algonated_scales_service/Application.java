@@ -145,7 +145,7 @@ public class Application extends AbstractVerticle {
         reply.put("totalMemory", runtime.totalMemory());
         rc.response()
                 .putHeader("Content-type", APPLICATION_JSON)
-                .end(Json.encode(reply));
+                .end(Json.encodePrettily(reply));
     }
 
     public static void main(String[] args) {
