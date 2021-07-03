@@ -5,6 +5,9 @@ import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
 import io.vertx.ext.web.handler.BodyHandler;
 import io.vertx.ext.web.handler.CorsHandler;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class HttpConfig {
 
@@ -15,7 +18,8 @@ public class HttpConfig {
     }
 
     public Handler<RoutingContext> createDefaultCorsHandler() {
-        return CorsHandler.create(getAllowedDomain())
+        return CorsHandler.create()
+                .addOrigins(getAllowedDomains())
                 .allowedMethod(io.vertx.core.http.HttpMethod.GET)
                 .allowedMethod(io.vertx.core.http.HttpMethod.POST)
                 .allowedMethod(io.vertx.core.http.HttpMethod.OPTIONS)
@@ -25,8 +29,11 @@ public class HttpConfig {
                 .allowedHeader("Content-Type");
     }
 
-    public String getAllowedDomain() {
-        return System.getProperty("cors.allowed.domain", ".*://localhost:.*");
+    public List<String> getAllowedDomains() {
+        return Stream.of(System.getProperty("cors.allowed.domain", "\".*://localhost:.*\""))
+                .map(string -> string.split(","))
+                .flatMap(Stream::of)
+                .collect(Collectors.toList());
     }
 
     public int getPort() {
