@@ -5,10 +5,13 @@ import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
 import io.vertx.ext.web.handler.BodyHandler;
 import io.vertx.ext.web.handler.CorsHandler;
+import lombok.extern.slf4j.Slf4j;
+
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+@Slf4j
 public class HttpConfig {
 
     public Router configureRouter(Router router) {
@@ -30,18 +33,24 @@ public class HttpConfig {
     }
 
     public List<String> getAllowedDomains() {
-        return Stream.of(System.getProperty("cors.allowed.domain", "\".*://localhost:.*\""))
+        var allowedDomains = Stream.of(System.getProperty("cors.allowed.domain", "\".*://localhost:.*\""))
                 .map(string -> string.split(","))
                 .flatMap(Stream::of)
                 .collect(Collectors.toList());
+        log.info("Allowed domains - {}", allowedDomains);
+        return allowedDomains;
     }
 
     public int getPort() {
-        return Integer.parseInt(System.getProperty("heroku.port", "80"));
+        var port = Integer.parseInt(System.getProperty("heroku.port", "80"));
+        log.info("Port - {}", port);
+        return port;
     }
 
     public String getHost() {
-        return System.getProperty("server.host", "0.0.0.0");
+        var host = System.getProperty("server.host", "0.0.0.0");
+        log.info("Host - {}", host);
+        return host;
     }
 
 }
