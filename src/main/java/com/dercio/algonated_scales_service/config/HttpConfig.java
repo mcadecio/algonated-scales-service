@@ -33,7 +33,8 @@ public class HttpConfig {
     }
 
     public List<String> getAllowedDomains() {
-        var allowedDomains = Stream.of(System.getProperty("cors.allowed.domain", "\".*://localhost:.*\""))
+        log.info("{}", System.getProperties());
+        var allowedDomains = Stream.of(System.getProperty("cors.allowed.domain", ".*://localhost:.*"))
                 .map(string -> string.split(","))
                 .flatMap(Stream::of)
                 .collect(Collectors.toList());
