@@ -4,6 +4,9 @@ import com.dercio.algonated_scales_service.config.HttpConfig;
 import com.dercio.algonated_scales_service.response.Response;
 import com.dercio.algonated_scales_service.verticles.runner.CodeOptions;
 import com.dercio.algonated_scales_service.verticles.codec.CodecRegisterVerticle;
+import com.dercio.algonated_scales_service.verticles.runner.demo.DemoOptions;
+import com.dercio.algonated_scales_service.verticles.runner.demo.DemoRunnerVerticle;
+import com.dercio.algonated_scales_service.verticles.scales.ScalesDemoVerticle;
 import com.dercio.algonated_scales_service.verticles.scales.ScalesSubmissionVerticle;
 import com.dercio.algonated_scales_service.verticles.VerticleAddresses;
 import com.dercio.algonated_scales_service.verticles.analytics.ScalesAnalyticsVerticle;
@@ -35,6 +38,12 @@ public class Application extends AbstractVerticle {
                 .handler(this::logResponseDispatch)
                 .failureHandler(this::failureHandler);
 
+        router.post("/exercise/demo/scales")
+                .handler(this::logRequestReceipt)
+                .handler(this::handleDemoRequest)
+                .handler(this::logResponseDispatch)
+                .failureHandler(this::failureHandler);
+
         httpServer = vertx.createHttpServer();
         httpServer
                 .requestHandler(router)
@@ -43,6 +52,7 @@ public class Application extends AbstractVerticle {
                     startPromise.complete();
                 });
     }
+
 
     @Override
     public void stop(Promise<Void> stopPromise) {
@@ -101,6 +111,22 @@ public class Application extends AbstractVerticle {
                 });
     }
 
+    private void handleDemoRequest(RoutingContext rc) {
+        vertx.eventBus().<Response>request(
+                VerticleAddresses.SCALES_DEMO.toString(),
+                rc.getBodyAsJson().mapTo(DemoOptions.class),
+                reply -> {
+                    if (reply.succeeded()) {
+                        rc.response()
+                                .putHeader("Content-Type", APPLICATION_JSON)
+                                .write(reply.result().body().encode());
+                        rc.next();
+                    } else {
+                        rc.fail(reply.cause());
+                    }
+                });
+    }
+
     public static void main(String[] args) {
         var vertx = Vertx.vertx();
         var deployment = new DeploymentOptions();
@@ -108,6 +134,8 @@ public class Application extends AbstractVerticle {
         vertx.deployVerticle(new ScalesSubmissionVerticle(), deployment);
         vertx.deployVerticle(new CodeRunnerVerticle(), deployment);
         vertx.deployVerticle(new ScalesAnalyticsVerticle(), deployment);
+        vertx.deployVerticle(new DemoRunnerVerticle(), deployment);
+        vertx.deployVerticle(new ScalesDemoVerticle(), deployment);
         vertx.deployVerticle(new Application(), deployment);
     }
 }

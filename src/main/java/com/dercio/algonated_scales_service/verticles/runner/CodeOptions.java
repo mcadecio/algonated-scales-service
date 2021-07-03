@@ -1,5 +1,6 @@
 package com.dercio.algonated_scales_service.verticles.runner;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.*;
 
@@ -19,6 +20,7 @@ public class CodeOptions {
     private int iterations;
     private List<String> importsAllowed;
     private List<String> illegalMethods;
+    @JsonAlias({"data", "weights"})
     private List<Double> weights;
     private String code;
 }

@@ -13,9 +13,9 @@ public class Response {
 
     private boolean isSuccess;
     private String consoleOutput;
-    private List<Integer> result;
-    private Object data;
-    private CodeRunnerSummary summary;
+    private List<Integer> result = Collections.emptyList();
+    private Object data = Collections.emptyList();
+    private CodeRunnerSummary summary = new CodeRunnerSummary();
     private List<List<Integer>> solutions = Collections.emptyList();
 
     @JsonProperty("isSuccess")
@@ -46,7 +46,7 @@ public class Response {
         return this;
     }
 
-    public Object getWeights() {
+    public Object getData() {
         return data;
     }
 
