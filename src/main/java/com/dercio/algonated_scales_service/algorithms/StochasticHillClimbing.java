@@ -7,7 +7,7 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.List;
 
-public class StochasticHillClimbing implements Algorithm<Solution, List<Double>> {
+public class StochasticHillClimbing implements Algorithm {
 
     private static final Logger logger = LoggerFactory.getLogger(StochasticHillClimbing.class);
     private final List<List<Integer>> solutions = new ArrayList<>();

@@ -4,6 +4,7 @@ import com.dercio.algonated_scales_service.response.Response;
 import com.dercio.algonated_scales_service.verticles.runner.CodeOptions;
 import com.dercio.algonated_scales_service.verticles.analytics.CodeRunnerSummary;
 import com.dercio.algonated_scales_service.verticles.analytics.AnalyticsRequest;
+import com.dercio.algonated_scales_service.verticles.runner.demo.DemoOptions;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Promise;
 import lombok.extern.slf4j.Slf4j;
@@ -25,7 +26,10 @@ public class CodecRegisterVerticle extends AbstractVerticle {
                         new GenericCodec<>(CodeOptions.class))
                 .registerDefaultCodec(
                         Response.class,
-                        new GenericCodec<>(Response.class));
+                        new GenericCodec<>(Response.class))
+                .registerDefaultCodec(
+                        DemoOptions.class,
+                        new GenericCodec<>(DemoOptions.class));
         startPromise.complete();
     }
 
@@ -35,6 +39,7 @@ public class CodecRegisterVerticle extends AbstractVerticle {
                 .unregisterDefaultCodec(AnalyticsRequest.class)
                 .unregisterDefaultCodec(CodeRunnerSummary.class)
                 .unregisterDefaultCodec(CodeOptions.class)
+                .unregisterDefaultCodec(DemoOptions.class)
                 .unregisterDefaultCodec(Response.class);
         stopPromise.complete();
     }

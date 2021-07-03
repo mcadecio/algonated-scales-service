@@ -1,16 +1,16 @@
 package com.dercio.algonated_scales_service.algorithms;
 
-import com.dercio.algonated_scales_service.verticles.runner.demo.DemoRequest;
+import com.dercio.algonated_scales_service.verticles.runner.demo.DemoOptions;
 import java.util.List;
 
-public interface Algorithm<T, D> {
+public interface Algorithm {
 
-    T run(D weights, int iterations);
+    Solution run(List<Double> weights, int iterations);
 
     List<List<Integer>> getSolutions();
 
-    static Algorithm<Solution, List<Double>> getScalesAlgorithm(DemoRequest<List<Double>> request) {
-        Algorithm<Solution, List<Double>> algorithm;
+    static Algorithm getScalesAlgorithm(DemoOptions request) {
+        Algorithm algorithm;
         String requestedAlgorithm = request.getAlgorithm();
         switch (requestedAlgorithm) {
             case "sa":

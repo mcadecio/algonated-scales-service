@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Slf4j
-public class SimulatedAnnealingAlgorithm implements Algorithm<Solution, List<Double>> {
+public class SimulatedAnnealingAlgorithm implements Algorithm {
 
     private final UniformRandomGenerator randomGenerator = new UniformRandomGenerator();
     private final List<List<Integer>> solutions = new ArrayList<>();
