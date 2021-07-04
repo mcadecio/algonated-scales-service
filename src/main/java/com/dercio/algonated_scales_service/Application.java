@@ -53,25 +53,19 @@ public class Application extends AbstractVerticle {
         httpServer = vertx.createHttpServer();
         httpServer
                 .requestHandler(router)
-                .listen(httpConfig.getPort(), httpConfig.getHost(), result -> {
-                    if (result.failed()) {
-                        log.error("Error: ", result.cause());
-                    }
-                    log.info("HTTP Server Started ...");
-                    startPromise.complete();
-                });
+                .listen(httpConfig.getPort(), httpConfig.getHost())
+                .onSuccess(event -> log.info("HTTP Server Started ..."))
+                .onFailure(error -> log.error("Error starting up"))
+                .onComplete(event -> startPromise.complete());
     }
 
 
     @Override
     public void stop(Promise<Void> stopPromise) {
-        httpServer.close(event -> {
-            log.info("Goodbye HTTP server ...");
-            if (!event.succeeded()) {
-                log.error(event.cause().getMessage());
-            }
-            stopPromise.complete();
-        });
+        httpServer.close()
+                .onSuccess(event -> log.info("Goodbye HTTP server ..."))
+                .onFailure(error -> log.error(error.getMessage()))
+                .onComplete(event -> stopPromise.complete());
     }
 
     private void logResponseDispatch(RoutingContext rc) {

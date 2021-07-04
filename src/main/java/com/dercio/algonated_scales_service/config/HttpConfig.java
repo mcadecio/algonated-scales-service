@@ -33,14 +33,14 @@ public class HttpConfig {
     }
 
     public List<String> getAllowedDomains() {
-        return Stream.of(System.getProperty("cors.allowed.domain", ".*://localhost:.*"))
+        return Stream.of(System.getProperty("cors.allowed.domain", "http://localhost:3000"))
                 .map(string -> string.split(","))
                 .flatMap(Stream::of)
                 .collect(Collectors.toList());
     }
 
     public int getPort() {
-        return Integer.parseInt(System.getProperty("heroku.port", "80"));
+        return Integer.parseInt(System.getProperty("heroku.port", "1235"));
     }
 
     public String getHost() {
