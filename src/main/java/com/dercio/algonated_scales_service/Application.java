@@ -54,7 +54,7 @@ public class Application extends AbstractVerticle {
         httpServer
                 .requestHandler(router)
                 .listen(httpConfig.getPort(), httpConfig.getHost())
-                .onSuccess(event -> log.info("HTTP Server Started ..."))
+                .onSuccess(server -> log.info("HTTP Server Started ... {}", server.actualPort()))
                 .onFailure(error -> log.error("Error starting up"))
                 .onComplete(event -> startPromise.complete());
     }
